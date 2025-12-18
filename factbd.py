@@ -83,6 +83,7 @@ def guardar_en_bd(data):
             Cliente TEXT,
             Modelo TEXT,
             Tipo TEXT,
+            Base REAL,      
             Cuota REAL,
             Importe REAL
         )
@@ -90,8 +91,8 @@ def guardar_en_bd(data):
     for _, fila in data.iterrows():
         cursor.execute("""
             INSERT INTO facturas
-            (Fecha, Codigo, Identificacion, Cliente, Modelo, Tipo, Cuota, Importe)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (Fecha, Codigo, Identificacion, Cliente, Modelo, Tipo, Base, Cuota, Importe)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             fila["Fecha"],
             fila["Código"],
@@ -99,6 +100,7 @@ def guardar_en_bd(data):
             fila["Cliente"],
             fila["Modelo"],
             fila["Tipo"],
+            fila["Base imp."],
             fila["Cuota"],
             fila["Importe"]
         ))
