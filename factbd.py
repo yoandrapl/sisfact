@@ -109,9 +109,24 @@ def guardar_en_bd(data):
         ))
     conn.commit()
     conn.close()
+    messagebox.showinfo("Éxito", "Datos guardados en la base de datos")
 
-
-   
+# Cargar datos desde la base de datos
+def cargar_desde_bd():
+    global df
+    try:
+        conn = sqlite3.connect("facturas.db")
+        df = pd.read_sql_query("SELECT * FROM facturas", conn)
+        conn.close()
+        
+        # Renombrar columnas para que coincidan con el formato esperado
+        df.columns = ["Fecha", "Código", "Identificación", "Cliente", "Modelo", "Tipo", "Base imp.", "Cuota", "Importe"]
+        
+        mostrar_datos(df)
+        actualizar_total(df)
+        messagebox.showinfo("Éxito", f"Se cargaron {len(df)} registros desde la base de datos")
+    except Exception as e:
+        messagebox.showerror("Error", f"Error al cargar desde BD: {str(e)}")
 
 # Interfaz gráfica
 ventana = tk.Tk()
@@ -128,9 +143,12 @@ btn_cargar.pack(pady=5)
 btn_guardar = tk.Button(
     ventana,
     text="Guardar en Base de Datos",
-    command=lambda: guardar_en_bd(df)
+    command=lambda: guardar_en_bd(df) if df is not None else messagebox.showwarning("Aviso", "Primero cargue un archivo CSV")
 )
 btn_guardar.pack(pady=5)
+
+btn_cargar_bd = tk.Button(ventana, text="Cargar desde Base de Datos", command=cargar_desde_bd)
+btn_cargar_bd.pack(pady=5)
 
 frame_filtros = tk.Frame(ventana)
 frame_filtros.pack()
