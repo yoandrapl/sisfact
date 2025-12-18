@@ -91,6 +91,10 @@ def guardar_en_bd(data):
             Importe REAL
         )
     """)
+    
+    # Vaciar la tabla antes de insertar nuevos datos
+    cursor.execute("DELETE FROM facturas")
+    
     for _, fila in data.iterrows():
         cursor.execute("""
             INSERT INTO facturas
