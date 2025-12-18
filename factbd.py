@@ -10,8 +10,6 @@ def cargar_excel():
     global df
     archivo = filedialog.askopenfilename(
         filetypes=[("Archivos CSV", "*.csv")]
-
-
     )
     if archivo:
         try:
@@ -92,8 +90,8 @@ def guardar_en_bd(data):
     for _, fila in data.iterrows():
         cursor.execute("""
             INSERT INTO facturas
-            (Fecha, Codigo, Identificacion, Cliente, Modelo, Importe)
-            VALUES (?, ?, ?, ?, ?, ?)
+            (Fecha, Codigo, Identificacion, Cliente, Modelo, Tipo, Cuota, Importe)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             fila["Fecha"],
             fila["Código"],
