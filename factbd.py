@@ -15,14 +15,17 @@ def cargar_excel():
         try:
             columnas = ["Fecha", "Código", "Identificación", "Cliente", "Modelo", "Tipo", "Base imp.","Cuota", "Importe"]
             df = pd.read_csv(archivo,sep=";", usecols=columnas)
-            df["Importe"] = (
-    df["Importe"]
-    .astype(str)
-    .str.replace(",", ".", regex=False)
-    .str.replace("$", "", regex=False)
-)
-
-            df["Importe"] = pd.to_numeric(df["Importe"], errors="coerce")
+            
+            # Convertir campos numéricos
+            for campo in ["Base imp.", "Cuota", "Importe"]:
+                df[campo] = (
+                    df[campo]
+                    .astype(str)
+                    .str.replace(",", ".", regex=False)
+                    .str.replace("$", "", regex=False)
+                )
+                df[campo] = pd.to_numeric(df[campo], errors="coerce")
+            
             mostrar_datos(df)
             actualizar_total(df)
 
