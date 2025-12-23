@@ -2,12 +2,15 @@ import sqlite3
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
+global filtrado
 
 df = None
+filtrado = None
 
 # Cargar archivo Excel
 def cargar_excel():
     global df
+    global filtrado
     archivo = filedialog.askopenfilename(
         filetypes=[("Archivos CSV", "*.csv")]
     )
@@ -28,7 +31,7 @@ def cargar_excel():
             
             mostrar_datos(df)
             actualizar_total(df)
-
+            filtrado = df.copy()
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
@@ -40,6 +43,8 @@ def mostrar_datos(data):
 
 # Aplicar filtros
 def filtrar():
+
+
     if df is None:
         messagebox.showwarning("Aviso", "Cargue un archivo Excel primero")
         return
@@ -48,7 +53,7 @@ def filtrar():
     ventas = entry_ventas.get()
     tipo = entry_tipo.get()
     matricula = entry_matricula.get()
-
+    global filtrado
     filtrado = df.copy()
 
     if cliente:
@@ -62,9 +67,26 @@ def filtrar():
         
     if matricula:
         filtrado = filtrado[filtrado["Identificación"].str.contains(matricula, case=False, na=False)]
-        
-        
+            
+    
+    mostrar_datos(filtrado)
+    actualizar_total(filtrado)
 
+# Limpiar filtros
+def limpiar_filtro():
+    global filtrado
+    if df is None:
+        messagebox.showwarning("Aviso", "Cargue un archivo CSV primero")
+        return
+    
+    # Limpiar campos de entrada
+    entry_cliente.delete(0, tk.END)
+    entry_ventas.delete(0, tk.END)
+    entry_tipo.delete(0, tk.END)
+    entry_matricula.delete(0, tk.END)
+    
+    # Restaurar datos originales
+    filtrado = df.copy()
     mostrar_datos(filtrado)
     actualizar_total(filtrado)
     
@@ -147,7 +169,7 @@ btn_cargar.pack(pady=5)
 btn_guardar = tk.Button(
     ventana,
     text="Guardar en Base de Datos",
-    command=lambda: guardar_en_bd(df) if df is not None else messagebox.showwarning("Aviso", "Primero cargue un archivo CSV")
+    command=lambda: guardar_en_bd(filtrado) if filtrado is not None else messagebox.showwarning("Aviso", "Primero cargue un archivo CSV")
 )
 btn_guardar.pack(pady=5)
 
@@ -175,6 +197,9 @@ entry_matricula.grid(row=0, column=7)
 
 btn_filtrar = tk.Button(ventana, text="Filtrar", command=filtrar)
 btn_filtrar.pack(pady=5)
+
+btn_limpiar = tk.Button(ventana, text="Limpiar Filtros", command=limpiar_filtro)
+btn_limpiar.pack(pady=5)
 
 # Tabla
 tabla = ttk.Treeview(ventana, columns=("FECHA", "FACTURA", "MATRICULA", "CLIENTE", "MODELO", "TIPO", "BASE IMP.","IVA", "IMPORTE" ), show="headings")
